@@ -2,7 +2,9 @@
   "name": "playwright-january",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test:ai": "npx playwright test --reporter=list"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
