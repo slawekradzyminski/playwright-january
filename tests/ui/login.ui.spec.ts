@@ -1,54 +1,45 @@
 import { test } from '../fixtures/auth.fixture';
-import { FRONTEND_URL } from '../../utils/constants';
-import { expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
 
 test('should successfully login with registered user', async ({ page, registeredUser }) => {
-  // given
-  await page.goto(`${FRONTEND_URL}/login`);
+    // given
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
 
-  // when
-  await page.locator('input[name="username"]').fill(registeredUser.username);
-  await page.locator('input[name="password"]').fill(registeredUser.password);
-  await page.getByRole('button', { name: 'Login' }).click();
+    // when
+    await loginPage.login(registeredUser.username, registeredUser.password);
 
-  // then
-  await page.waitForURL(`${FRONTEND_URL}/`);
-  await expect(page.getByRole('heading', { level: 1, name: `Hi ${registeredUser.firstName}!` })).toBeVisible();
-  await expect(page.getByText("You're logged in! Congratulations :)")).toBeVisible();
+    // then
+    await loginPage.expectSuccessfulLogin(registeredUser.firstName);
 });
 
 test('should show validation errors when credentials are too short', async ({ page }) => {
-  // given
-  await page.goto(`${FRONTEND_URL}/login`);
-  const tooShortInput = '123';
+    // given
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    const tooShortInput = '123';
 
-  // when
-  await page.locator('input[name="username"]').fill(tooShortInput);
-  await page.locator('input[name="password"]').fill(tooShortInput);
-  await page.getByRole('button', { name: 'Login' }).click();
+    // when
+    await loginPage.login(tooShortInput, tooShortInput);
 
-  // then
-  await expect(page.locator('input[name="username"]')).toHaveClass(/is-invalid/);
-  await expect(page.locator('input[name="password"]')).toHaveClass(/is-invalid/);
-  await expect(page.getByText('Required field length is 4 or more')).toHaveCount(2);
+    // then
+    await loginPage.expectValidationErrors();
 });
 
 test('should show error message for invalid credentials', async ({ page }) => {
-  // given
-  await page.goto(`${FRONTEND_URL}/login`);
-  const invalidCredentials = {
-    username: 'nonexistent',
-    password: 'wrongpassword'
-  };
+    // given
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    const invalidCredentials = {
+        username: 'nonexistent',
+        password: 'wrongpassword'
+    };
 
-  // when
-  await page.locator('input[name="username"]').fill(invalidCredentials.username);
-  await page.locator('input[name="password"]').fill(invalidCredentials.password);
-  await page.getByRole('button', { name: 'Login' }).click();
+    // when
+    await loginPage.login(invalidCredentials.username, invalidCredentials.password);
 
-  // then
-  await expect(page.locator('.alert-danger')).toBeVisible();
-  await expect(page.getByText('Invalid username/password supplied')).toBeVisible();
+    // then
+    await loginPage.expectInvalidCredentialsError();
 });
 
 
