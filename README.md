@@ -1,6 +1,14 @@
 # Playwright E2E Testing Project
 
-This repository contains end-to-end tests using Playwright, a modern automation framework for web testing.
+This repository contains end-to-end tests using Playwright, focusing on both API and UI testing with TypeScript.
+
+## 🎯 Project Overview
+
+- **Testing Approach**: Combined API and UI testing strategy
+- **Language**: TypeScript
+- **Framework**: Playwright
+- **Package Manager**: npm
+- **Test Organization**: Given/When/Then pattern in test comments
 
 ## 🚀 Getting Started
 
@@ -36,7 +44,12 @@ npx playwright test
 
 ### Run tests in UI mode
 ```bash
-npx playwright test --ui
+npm run test:ui
+```
+
+### Run tests in AI-friendly mode (list reporter)
+```bash
+npm run test:ai
 ```
 
 ### Run tests in headed mode
@@ -56,22 +69,51 @@ After test execution, HTML report will be generated in the `playwright-report` d
 npx playwright show-report
 ```
 
-## 🔧 Configuration
-
-The project configuration is defined in `playwright.config.ts`. Key features include:
-- Parallel test execution
-- Automatic retries on CI
-- HTML report generation
-- Trace capture on failure
-
-## 📁 Project Structure
+## 🔧 Project Structure
 
 ```
-├── tests/                  # Test files
-├── playwright/.auth/       # Authentication states
-├── playwright-report/      # Test reports
-└── test-results/          # Test artifacts
+├── tests/                    # Test files
+│   ├── api/                 # API test specs
+│   ├── ui/                  # UI test specs
+│   └── fixtures/            # Test fixtures and shared utilities
+├── types/                   # TypeScript type definitions
+├── http/                    # HTTP client implementations
+├── utils/                   # Utility functions and constants
+├── generators/              # Test data generators
+├── prompthistory/          # AI conversation history
+├── playwright-report/       # Test reports
+└── test-results/           # Test artifacts
 ```
+
+## 🤖 AI-Friendly Features
+
+1. **Type System**
+   - TypeScript types are centralized in `/types` directory
+   - Strong typing for API requests/responses
+
+2. **Test Structure**
+   - Tests follow Given/When/Then pattern in comments
+   - API tests are ordered by response status code (200 first, then 400, 403, 404)
+   - Separate UI and API test directories
+
+3. **Fixtures and Generators**
+   - Reusable authentication fixtures
+   - Data generators for test data
+
+4. **Prompt History**
+   - AI conversations are saved in `/prompthistory`
+   - Helps maintain context and development history
+
+5. **HTTP Layer**
+   - Abstracted HTTP calls in `/http` directory
+   - Typed request/response handling
+
+## 🔄 Development Workflow
+
+1. Tests are organized by type (API/UI)
+2. Each feature has corresponding test files
+3. Shared code is extracted into fixtures and utilities
+4. AI prompts are preserved for context
 
 ## 🤝 Contributing
 
