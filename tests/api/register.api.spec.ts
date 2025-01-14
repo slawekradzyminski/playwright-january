@@ -1,29 +1,23 @@
 import { test, expect } from '@playwright/test';
-import { BACKEND_URL } from '../../utils/constants';
 import { getRandomUser } from '../../generators/userGenerator';
+import { postSignUp } from '../../http/postSignUp';
 
 test.describe('Register API', () => {
-  // given
-  const registerEndpoint = `${BACKEND_URL}/users/signup`;
-
   test('should successfully register a new user', async ({ request }) => {
     // given
     const newUser = getRandomUser();
 
     // when
-    const response = await request.post(registerEndpoint, {
-      data: newUser
-    });
-    const responseBody = await response.json();
+    const { response, status } = await postSignUp(request, newUser);
 
     // then
-    expect(response.status()).toBe(201);
-    expect(responseBody).toEqual({
+    expect(status).toBe(201);
+    expect(response).toEqual({
       token: expect.any(String)
     });
   });
 
-const validationTestCases = [
+  const validationTestCases = [
     { field: 'username', value: 'abc', expectedError: 'Minimum username length: 4 characters' },
     { field: 'email', value: 'invalid-email', expectedError: 'must be a well-formed email address' },
     { field: 'password', value: 'abc', expectedError: 'Minimum password length: 4 characters' },
@@ -37,12 +31,11 @@ const validationTestCases = [
       newUser[field] = value;
 
       // when
-      const response = await request.post(registerEndpoint, { data: newUser });
-      const responseBody = await response.json();
+      const { response, status } = await postSignUp(request, newUser);
 
       // then
-      expect(response.status()).toBe(400);
-      expect(responseBody[field]).toContain(expectedError);
+      expect(status).toBe(400);
+      expect(response[field]).toContain(expectedError);
     });
   });
 
@@ -52,14 +45,11 @@ const validationTestCases = [
     newUser.username = 'admin';
 
     // when
-    const response = await request.post(registerEndpoint, {
-      data: newUser
-    });
-    const responseBody = await response.json();
+    const { response, status } = await postSignUp(request, newUser);
 
     // then
-    expect(response.status()).toBe(422);
-    expect(responseBody).toEqual(expect.objectContaining({
+    expect(status).toBe(422);
+    expect(response).toEqual(expect.objectContaining({
       status: 422,
       error: 'Unprocessable Entity',
       message: 'Username is already in use',
