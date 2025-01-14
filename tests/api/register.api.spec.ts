@@ -23,21 +23,26 @@ test.describe('Register API', () => {
     });
   });
 
-  test('should return 400 for invalid email format', async ({ request }) => {
-    // given
-    const newUser = getRandomUser();
-    newUser.email = 'invalid-email';
+const validationTestCases = [
+    { field: 'username', value: 'abc', expectedError: 'Minimum username length: 4 characters' },
+    { field: 'email', value: 'invalid-email', expectedError: 'must be a well-formed email address' },
+    { field: 'password', value: 'abc', expectedError: 'Minimum password length: 4 characters' },
+    { field: 'roles', value: [], expectedError: 'Please pick at least one role' },
+  ];
 
-    // when
-    const response = await request.post(registerEndpoint, {
-      data: newUser
-    });
-    const responseBody = await response.json();
+  validationTestCases.forEach(({ field, value, expectedError }) => {
+    test(`should return 400 when ${field} is invalid`, async ({ request }) => {
+      // given
+      const newUser = getRandomUser();
+      newUser[field] = value;
 
-    // then
-    expect(response.status()).toBe(400);
-    expect(responseBody).toEqual({
-      email: 'must be a well-formed email address'
+      // when
+      const response = await request.post(registerEndpoint, { data: newUser });
+      const responseBody = await response.json();
+
+      // then
+      expect(response.status()).toBe(400);
+      expect(responseBody[field]).toContain(expectedError);
     });
   });
 
