@@ -1,23 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '../fixtures/auth.fixture';
 import { postSignIn } from '../../http/postSignIn';
 
 test.describe('Login API', () => {
-  test('should successfully login with valid credentials', async ({ request }) => {
+  test('should successfully login with valid credentials', async ({ request, registeredUser }) => {
     // when
     const { response, status } = await postSignIn(request, {
-      username: 'admin',
-      password: 'admin'
+      username: registeredUser.username,
+      password: registeredUser.password
     });
 
     // then
     expect(status).toBe(200);
     expect(response).toEqual({
-      username: 'admin',
-      roles: ['ROLE_ADMIN', 'ROLE_CLIENT'],
-      firstName: 'Slawomir',
-      lastName: 'Radzyminski',
+      username: registeredUser.username,
+      roles: registeredUser.roles,
+      firstName: registeredUser.firstName,
+      lastName: registeredUser.lastName,
       token: expect.any(String),
-      email: 'admin@email.com'
+      email: registeredUser.email
     });
   });
 
