@@ -1,7 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
 import { BACKEND_URL } from '../utils/constants';
 
-export async function getUser(
+export async function deleteUser(
     request: APIRequestContext,
     username: string,
     token?: string
@@ -10,7 +10,7 @@ export async function getUser(
         'Authorization': `Bearer ${token}`
     } : {};
 
-    const response = await request.get(`${BACKEND_URL}/users/${username}`, {
+    const response = await request.delete(`${BACKEND_URL}/users/${username}`, {
         headers
     });
 
