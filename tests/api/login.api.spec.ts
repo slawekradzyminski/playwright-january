@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures/auth.fixture';
+import { expect, test } from '../fixtures/registered-user.api';
 import { postSignIn } from '../../http/postSignIn';
 
 test.describe('Login API', () => {

@@ -1,4 +1,4 @@
-import { test } from '../fixtures/auth.fixture';
+import { test } from '../fixtures/registered-user.api';
 import { RegisterPage } from '../pages/register.page';
 import { getRandomUser } from '../../generators/userGenerator';
 

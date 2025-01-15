@@ -1,4 +1,4 @@
-import { test } from '../fixtures/auth.fixture';
+import { test } from '../fixtures/registered-user.api';
 import { LoginPage } from '../pages/login.page';
 
 test('should successfully login with registered user', async ({ page, registeredUser }) => {

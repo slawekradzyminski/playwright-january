@@ -1,4 +1,4 @@
-import { test } from '../fixtures/registered-user.fixture';
+import { test } from '../fixtures/logged-in-user.api.fixture';
 import { expect } from '@playwright/test';
 import { getUser } from '../../http/getUser';
 
