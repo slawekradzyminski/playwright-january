@@ -1,6 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 import { getRandomUser } from '../../generators/userGenerator';
 import { postSignUp } from '../../http/postSignUp';
+import { test as registeredUserTest } from '../fixtures/registered-user.api';
+
+const test = registeredUserTest;
 
 test.describe('Register API', () => {
   test('should successfully register a new user', async ({ request }) => {
@@ -39,10 +42,10 @@ test.describe('Register API', () => {
     });
   });
 
-  test('should return 422 when trying to register with admin role', async ({ request }) => {
+  test('should return 422 when trying to register with existing username', async ({ request, registeredUser }) => {
     // given
     const newUser = getRandomUser();
-    newUser.username = 'admin';
+    newUser.username = registeredUser.username;
 
     // when
     const { response, status } = await postSignUp(request, newUser);
