@@ -3,6 +3,7 @@ import { postSignUp } from '../../http/postSignUp';
 import { postSignIn } from '../../http/postSignIn';
 import { getRandomUser } from '../../generators/userGenerator';
 import type { User } from '../../types/User';
+import { deleteUser } from '../../http/deleteUser';
 
 type RegisteredUserFixtures = {
     registeredUserWithToken: {
@@ -26,6 +27,10 @@ export const test = base.extend<RegisteredUserFixtures>({
             user: newUser,
             token: response.token
         });
+
+        // Cleanup after test
+        const { status: deleteStatus } = await deleteUser(request, newUser.username, response.token);
+        expect(deleteStatus).toBe(204);
     }
 });
 

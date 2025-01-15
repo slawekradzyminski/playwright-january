@@ -4,6 +4,7 @@ import { postSignIn } from '../../http/postSignIn';
 import { FRONTEND_URL } from '../../utils/constants';
 import { getRandomUser } from '../../generators/userGenerator';
 import type { User } from '../../types/User';
+import { deleteUser } from '../../http/deleteUser';
 
 type AuthenticatedPageFixtures = {
     authenticatedPage: {
@@ -36,6 +37,10 @@ export const test = base.extend<AuthenticatedPageFixtures>({
             user: newUser,
             token: loginResponse.token
         });
+
+        // Cleanup after test
+        const { status: deleteStatus } = await deleteUser(page.context().request, newUser.username, loginResponse.token);
+        expect(deleteStatus).toBe(204);
     }
 });
 
