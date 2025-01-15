@@ -1,10 +1,7 @@
-import { test as base, expect, Page } from '@playwright/test';
-import { postSignUp } from '../../http/postSignUp';
-import { postSignIn } from '../../http/postSignIn';
+import { test as base, Page } from '@playwright/test';
 import { FRONTEND_URL } from '../../utils/constants';
-import { getRandomUser } from '../../generators/userGenerator';
 import type { User } from '../../types/User';
-import { deleteUser } from '../../http/deleteUser';
+import { createAuthenticatedUser, cleanupUser } from '../../utils/auth.utils';
 
 type AuthenticatedPageFixtures = {
     authenticatedPage: {
@@ -16,31 +13,22 @@ type AuthenticatedPageFixtures = {
 
 export const test = base.extend<AuthenticatedPageFixtures>({
     authenticatedPage: async ({ page }, use) => {
-        const newUser = getRandomUser();
-        const { status } = await postSignUp(page.context().request, newUser);
-        expect(status).toBe(201);
-
-        const { response: loginResponse, status: loginStatus } = await postSignIn(page.context().request, {
-            username: newUser.username,
-            password: newUser.password
-        });
-        expect(loginStatus).toBe(200);
+        const { user, token } = await createAuthenticatedUser(page.context().request);
+        const { password, ...userWithoutPassword } = user;
         
         await page.context().addInitScript(loginResponse => {
             window.localStorage.setItem('user', JSON.stringify(loginResponse));
-        }, loginResponse);
+        }, { ...userWithoutPassword, token });
         
         await page.goto(FRONTEND_URL);
         
         await use({ 
             page,
-            user: newUser,
-            token: loginResponse.token
+            user,
+            token
         });
 
-        // Cleanup after test
-        const { status: deleteStatus } = await deleteUser(page.context().request, newUser.username, loginResponse.token);
-        expect(deleteStatus).toBe(204);
+        await cleanupUser(page.context().request, user.username, token);
     }
 });
 
